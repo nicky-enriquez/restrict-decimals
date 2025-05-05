@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Validación de Monto con Límites (jQuery)</title>
+    <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+</head>
+<body>
+
+    <label for="monto">Ingrese el monto:</label>
+    <input type="text" id="monto" name="monto" inputmode="decimal" pattern="[0-9.]*" title="Máximo 4 enteros y 2 decimales">
+
+    <script>
+        $(document).ready(function() {
+            const MAX_ENTERO = 4;
+            const MAX_DECIMAL = 2;
+
+            $('#monto').on('input', function() {
+                let value = $(this).val();
+                value = value.replace(/[^0-9.]/g, ''); // Elimina no números ni punto
+
+                const parts = value.split('.');
+                const integerPart = parts[0] || '';
+                const decimalPart = parts[1] || '';
+
+                if (integerPart.length > MAX_ENTERO) {
+                    value = integerPart.slice(0, MAX_ENTERO) + (decimalPart ? '.' + decimalPart : '');
+                }
+
+                if (decimalPart.length > MAX_DECIMAL) {
+                    value = integerPart + (decimalPart ? '.' + decimalPart.slice(0, MAX_DECIMAL) : '');
+                }
+
+                // Asegurar que solo haya un punto decimal
+                const decimalCount = (value.match(/\./g) || []).length;
+                if (decimalCount > 1) {
+                    const firstDotIndex = value.indexOf('.');
+                    const secondDotIndex = value.indexOf('.', firstDotIndex + 1);
+                    value = value.slice(0, secondDotIndex);
+                }
+
+                $(this).val(value); // Actualiza el valor del input
+            });
+        });
+    </script>
+
+</body>
+</html>
